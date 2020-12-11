@@ -1,4 +1,5 @@
 #include "socket_control.h"
+#include "logger.h"
 
 #include <iostream>
 #include <cstring>
@@ -41,7 +42,7 @@ int SocketControl::bind(char ip[100], int port)
     memset(welcomeData, '\0', sizeof(welcomeData));
     recv(socketDescriptor, welcomeData, sizeof(welcomeData), 0);
     string welcomeString = string(welcomeData);
-    cout << welcomeString;
+    info(welcomeString);
     return 0;
   }
 }
@@ -51,8 +52,6 @@ string SocketControl::sendCommand(string sendString)
   char sendData[CHUNK_SIZE], receiveData[CHUNK_SIZE];
   memset(sendData, '\0', sizeof(sendData));
   strncpy(sendData, sendString.c_str(), sizeof(sendData));
-  //cout<<"Sending command to server : ";
-  //cout<<sendData;
   send(socketDescriptor, sendData, sizeof(sendData), 0);
   string receiveString = "";
   while (true)
@@ -60,7 +59,6 @@ string SocketControl::sendCommand(string sendString)
     memset(receiveData, '\0', sizeof(receiveData));
     recv(socketDescriptor, receiveData, sizeof(receiveData), 0);
     receiveString += string(receiveData);
-    //cout << "**" + string(receiveData) + "**";
     if (string(receiveData).length() < CHUNK_SIZE)
     {
       break;

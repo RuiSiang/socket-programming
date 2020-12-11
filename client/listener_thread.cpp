@@ -1,5 +1,6 @@
 #include "listener_thread.h"
 #include "handler_thread.h"
+#include "logger.h"
 
 #include <iostream>
 #include <cstring>
@@ -19,10 +20,12 @@ ListenerThread::ListenerThread(int port)
   listenerSocketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
   if (listenerSocketDescriptor == -1)
   {
-    cout << "Listener Socket Creation Failed\n";
+    error("Listener Socket Creation Failed\n");
     exit(-1);
-  } else{
-    cout << "Listener Established\n";
+  }
+  else
+  {
+    info("Listener Established\n");
   }
   //socket initialization end
 
@@ -35,10 +38,12 @@ ListenerThread::ListenerThread(int port)
   int err = bind(listenerSocketDescriptor, (struct sockaddr *)&listenerInfo, sizeof(listenerInfo));
   if (err == -1)
   {
-    cout << "Bind port failed, please try again\n";
+    error("Bind port failed, please try again\n");
     exit(-1);
-  } else{
-    cout << "Binded on port " << port << "\n";
+  }
+  else
+  {
+    info("Binded on port " + port + "\n");
   }
   //connection initialization end
 }
@@ -54,8 +59,8 @@ void ListenerThread::startListen()
     {
       break;
     }
-    cout << "Incoming request assigned with descriptor " << incomingClientSocketDescriptor << " ";
-    cout << "(originated from ip: " << inet_ntoa(incomingClientInfo.sin_addr) << ", port: " << ntohs(incomingClientInfo.sin_port) << ")\n";
+    info("Incoming request assigned with descriptor " + incomingClientSocketDescriptor + " ");
+    info("(originated from ip: " + inet_ntoa(incomingClientInfo.sin_addr) + ", port: "+ntohs(incomingClientInfo.sin_port)+")\n");
 
     HandlerThread *newThread = new HandlerThread(incomingClientSocketDescriptor);
     thread sth(&HandlerThread::handler, newThread);

@@ -28,7 +28,6 @@ void HandlerThread::handler()
       memset(receiveData, '\0', sizeof(receiveData));
       recv(threadSocketDescriptor, receiveData, sizeof(receiveData), 0);
       receiveString += string(receiveData);
-      //cout << "**" + string(receiveData) + "**";
       if (string(receiveData).length() < CHUNK_SIZE)
       {
         break;
@@ -39,7 +38,7 @@ void HandlerThread::handler()
       break;
     }
   }
-  cout << "Thread " << threadSocketDescriptor << " terminated\n";
+  info("Thread " + threadSocketDescriptor + " terminated\n");
   close(threadSocketDescriptor);
 
   delete this;
@@ -53,7 +52,7 @@ int HandlerThread::process(string receiveString)
   }
   else
   {
-    cout << receiveString;
+    info(receiveString);
   }
   return 0;
 }

@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
     cin >> command;
     if (command == "new")
     {
-      username;
       int initialAmount;
       cout << "Please input user name to register: ";
       cin >> username;
@@ -109,7 +108,7 @@ int main(int argc, char *argv[])
       cout << "Port number must be in range 1024~65536\n";
     }
   }
-  ListenerThread *masterListenThread=new ListenerThread(clientPort);
+  ListenerThread *masterListenThread = new ListenerThread(clientPort);
   thread t1(&ListenerThread::startListen, masterListenThread);
   //login end
 
