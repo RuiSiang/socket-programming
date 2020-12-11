@@ -23,12 +23,12 @@ SocketControl::SocketControl()
   }
 }
 
-int SocketControl::bind(char[] ip, int port)
+int SocketControl::bind(char ip[100], int port)
 {
   struct sockaddr_in connectionInfo;
   memset(&connectionInfo, 0, sizeof(connectionInfo));
   connectionInfo.sin_family = PF_INET;
-  connectionInfo.sin_addr.s_addr = inet_addr(ip.c_str());
+  connectionInfo.sin_addr.s_addr = inet_addr(ip);
   connectionInfo.sin_port = htons(port);
   int err = connect(socketDescriptor, (struct sockaddr *)&connectionInfo, sizeof(connectionInfo));
   if (err == -1)
@@ -58,7 +58,7 @@ string SocketControl::sendCommand(string sendString)
   while (true)
   {
     memset(receiveData, '\0', sizeof(receiveData));
-    recv(clientSocketDescriptor, receiveData, sizeof(receiveData), 0);
+    recv(socketDescriptor, receiveData, sizeof(receiveData), 0);
     receiveString += string(receiveData);
     //cout << "**" + string(receiveData) + "**";
     if (string(receiveData).length() < CHUNK_SIZE)
