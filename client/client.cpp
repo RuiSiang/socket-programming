@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
     }
   }
   ListenerThread masterListenThread(clientPort);
-  thread t1(masterListenThread.startListen(10));
+  thread t1((masterListenThread.startListen(10)));
   //login end
 
   //functionals start
