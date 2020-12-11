@@ -9,7 +9,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#define LISTENER_NUM
+#define LISTENER_NUM 10
 
 using namespace std;
 

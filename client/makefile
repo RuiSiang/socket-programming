@@ -26,3 +26,4 @@ clean:
 	rm -f client.o
 	rm -f listener_thread.o
 	rm -f handler_thread.o
+	rm -f socket_control.o
