@@ -111,8 +111,8 @@ int main(int argc, char *argv[])
       cout << "Port number must be in range 1024~65536\n";
     }
   }
-  ListenerThread masterListenThread(clientPort);
-  thread t1((masterListenThread.startListen(10)));
+  ListenerThread *masterListenThread=new ListenerThread(clientPort);
+  thread t1(&ListenerThread::startListen, masterListenThread, 10);
   //login end
 
   //functionals start
