@@ -5,6 +5,7 @@
 #include <cstring>
 #include <iomanip>
 #include <vector>
+#include <thread>
 
 using namespace std;
 
@@ -83,7 +84,6 @@ int main(int argc, char *argv[])
   int clientPort;
   while (true)
   {
-    string username;
     cout << "Login user name: ";
     cin >> username;
     cout << "Client port to open: ";

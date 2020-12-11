@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <cstring>
-#include <thread>
 #include <iomanip>
 #include <vector>
 #include <unistd.h>
