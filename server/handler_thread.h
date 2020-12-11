@@ -2,6 +2,8 @@
 #ifndef HANDLER_THREAD_H
 #define HANDLER_THREAD_H
 
+#include <string>
+
 class HandlerThread
 {
 public:
@@ -13,7 +15,7 @@ public:
 
 private:
   int threadSocketDescriptor;
-  int process(string);
+  int process(std::string);
 };
 
 #endif
