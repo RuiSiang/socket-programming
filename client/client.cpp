@@ -178,7 +178,6 @@ int main(int argc, char *argv[])
       string receiveString = tmpSocketControl.sendCommand(sendString);
       tmpSocketControl.terminate();
       cout << receiveString;
-      break;
     }
     else if (command == "logout")
     {
