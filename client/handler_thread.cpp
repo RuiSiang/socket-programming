@@ -61,7 +61,8 @@ int HandlerThread::process(string receiveString)
     string segment;
     vector<string> segments;
     segments.clear();
-    while (getline(receiveString, segment, '#'))
+    stringstream receiveStream(receiveString);
+    while (getline(receiveStream, segment, '#'))
     {
       segments.push_back(segment);
     }

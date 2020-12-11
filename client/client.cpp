@@ -216,11 +216,11 @@ int getBalance()
 vector<string> getList()
 {
   string sendString = "List";
-  stringstream receiveString(mainSocketControl->sendCommand(sendString));
+  stringstream receiveStream(mainSocketControl->sendCommand(sendString));
   string tmp;
   vector<string> segments;
   segments.clear();
-  while (getline(receiveString, tmp, '\n'))
+  while (getline(receiveStream, tmp, '\n'))
   {
     stringstream tmpss;
     string segment;
