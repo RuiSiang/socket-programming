@@ -1,4 +1,5 @@
 #include "handler_thread.h"
+#include "logger.h"
 
 #include <iostream>
 #include <cstring>
@@ -38,7 +39,7 @@ void HandlerThread::handler()
       break;
     }
   }
-  info("Thread " + threadSocketDescriptor + " terminated\n");
+  info("Thread " + to_string(threadSocketDescriptor) + " terminated\n");
   close(threadSocketDescriptor);
 
   delete this;

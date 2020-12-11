@@ -43,7 +43,7 @@ ListenerThread::ListenerThread(int port)
   }
   else
   {
-    info("Binded on port " + port + "\n");
+    info("Binded on port " + to_string(port) + "\n");
   }
   //connection initialization end
 }
@@ -59,8 +59,8 @@ void ListenerThread::startListen()
     {
       break;
     }
-    info("Incoming request assigned with descriptor " + incomingClientSocketDescriptor + " ");
-    info("(originated from ip: " + inet_ntoa(incomingClientInfo.sin_addr) + ", port: "+ntohs(incomingClientInfo.sin_port)+")\n");
+    info("Incoming request assigned with descriptor " + to_string(incomingClientSocketDescriptor) + " ");
+    info("(originated from ip: " + string(inet_ntoa(incomingClientInfo.sin_addr)) + ", port: "+to_string(ntohs(incomingClientInfo.sin_port))+")\n");
 
     HandlerThread *newThread = new HandlerThread(incomingClientSocketDescriptor);
     thread sth(&HandlerThread::handler, newThread);
