@@ -14,9 +14,10 @@
 
 using namespace std;
 
-ListenerThread::ListenerThread(int port)
+ListenerThread::ListenerThread(int port, SocketControl *_mainsocketControl)
 {
   //socket initialization start
+  mainSocketControl = _mainsocketControl;
   listenerSocketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
   if (listenerSocketDescriptor == -1)
   {
@@ -62,7 +63,7 @@ void ListenerThread::startListen()
     info("Incoming request assigned with descriptor " + to_string(incomingClientSocketDescriptor) + " ");
     info("(originated from ip: " + string(inet_ntoa(incomingClientInfo.sin_addr)) + ", port: "+to_string(ntohs(incomingClientInfo.sin_port))+")\n");
 
-    HandlerThread *newThread = new HandlerThread(incomingClientSocketDescriptor);
+    HandlerThread *newThread = new HandlerThread(incomingClientSocketDescriptor, mainSocketControl);
     thread sth(&HandlerThread::handler, newThread);
     sth.detach();
   }

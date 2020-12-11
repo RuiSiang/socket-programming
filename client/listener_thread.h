@@ -5,11 +5,12 @@
 class ListenerThread
 {
 public:
-    ListenerThread(int);
+    ListenerThread(int, SocketControl *);
     void startListen();
 
 private:
     int listenerSocketDescriptor;
+    SocketControl *mainSocketControl;
 };
 
 #endif
