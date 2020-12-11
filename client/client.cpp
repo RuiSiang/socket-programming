@@ -10,10 +10,8 @@
 using namespace std;
 
 //functions
-string serverCommand(int, string);
 int getBalance();
 vector<string> getList();
-string clientCommand(string, string, int);
 
 //global variables
 SocketControl *mainSocketControl;
@@ -203,7 +201,7 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-int getBalance(int clientSocketDescriptor)
+int getBalance()
 {
   string sendString = "List";
   stringstream receiveString(mainSocketControl->sendCommand(sendString));
@@ -217,7 +215,7 @@ int getBalance(int clientSocketDescriptor)
   return atoi(segments[0].c_str());
 }
 
-vector<string> getList(int clientSocketDescriptor)
+vector<string> getList()
 {
   string sendString = "List";
   stringstream receiveString(mainSocketControl->sendCommand(sendString));
