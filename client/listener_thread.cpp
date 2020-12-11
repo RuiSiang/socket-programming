@@ -9,6 +9,8 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
+#define LISTENER_NUM
+
 using namespace std;
 
 ListenerThread::ListenerThread(int port)
@@ -40,9 +42,9 @@ ListenerThread::ListenerThread(int port)
   }
   //connection initialization end
 }
-void ListenerThread::startListen(int listenerNum)
+void ListenerThread::startListen()
 {
-  listen(listenerSocketDescriptor, listenerNum);
+  listen(listenerSocketDescriptor, LISTENER_NUM);
   while (true)
   {
     struct sockaddr_in incomingClientInfo;

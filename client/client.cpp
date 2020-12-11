@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
     }
   }
   ListenerThread *masterListenThread=new ListenerThread(clientPort);
-  thread t1(&ListenerThread::startListen, masterListenThread, 10);
+  thread t1(&ListenerThread::startListen, masterListenThread);
   //login end
 
   //functionals start

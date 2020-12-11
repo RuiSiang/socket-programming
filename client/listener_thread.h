@@ -6,7 +6,7 @@ class ListenerThread
 {
 public:
     ListenerThread(int);
-    void startListen(int);
+    void startListen();
 
 private:
     int listenerSocketDescriptor;
