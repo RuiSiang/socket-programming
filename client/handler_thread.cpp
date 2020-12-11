@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cstring>
+#include <vector>
 #include <thread>
 #include <unistd.h>
 #include <sys/types.h>
@@ -38,6 +39,10 @@ void HandlerThread::handler()
     {
       break;
     }
+    memset(sendData, '\0', sizeof(sendData));
+    sendString = "Payment received, retransmitting to server\n";
+    strncpy(sendData, sendString.c_str(), sizeof(sendData));
+    send(threadSocketDescriptor, sendData, sizeof(sendData), 0);
   }
   info("Thread " + to_string(threadSocketDescriptor) + " terminated\n");
   close(threadSocketDescriptor);
@@ -53,7 +58,17 @@ int HandlerThread::process(string receiveString)
   }
   else
   {
-    info(receiveString);
+    string segment;
+    vector<string> segments;
+    segments.clear();
+    while (getline(receiveString, segment, '#'))
+    {
+      segments.push_back(segment);
+    }
+    string sender = segments[0];
+    string amount = segments[1];
+    info("Received incoming transaction: " + sender + " sent " + amount + ". Retransmitting to server\n");
+    info(mainSocketControl->sendCommand(receiveString));
   }
   return 0;
 }
