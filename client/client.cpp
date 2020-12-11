@@ -172,8 +172,9 @@ int main(int argc, char *argv[])
       string sendString = username + "#" + to_string(amount) + "#" + recepient;
       SocketControl tmpSocketControl;
       char ipArr[100];
+      memset(ipArr, '\0', sizeof(ipArr));
       strncpy(ipArr, sendString.c_str(), sizeof(recepientIp));
-      tmpSocketControl.bind(ipArr, stoi(recepientPort));
+      int err = tmpSocketControl.bind(ipArr, stoi(recepientPort));
       string receiveString = tmpSocketControl.sendCommand(sendString);
       tmpSocketControl.terminate();
       cout << receiveString;
