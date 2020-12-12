@@ -23,28 +23,26 @@ void HandlerThread::handler()
   sendString = "Handler Assigned\n";
   strncpy(sendData, sendString.c_str(), sizeof(sendData));
   send(threadSocketDescriptor, sendData, sizeof(sendData), 0);
+  receiveString = "";
   while (true)
   {
-    receiveString = "";
-    while (true)
-    {
-      memset(receiveData, '\0', sizeof(receiveData));
-      recv(threadSocketDescriptor, receiveData, sizeof(receiveData), 0);
-      receiveString += string(receiveData);
-      if (string(receiveData).length() < CHUNK_SIZE)
-      {
-        break;
-      }
-    }
-    if (process(receiveString))
+    memset(receiveData, '\0', sizeof(receiveData));
+    recv(threadSocketDescriptor, receiveData, sizeof(receiveData), 0);
+    receiveString += string(receiveData);
+    if (string(receiveData).length() < CHUNK_SIZE)
     {
       break;
     }
-    memset(sendData, '\0', sizeof(sendData));
-    sendString = "Payment received, retransmitting to server\n";
-    strncpy(sendData, sendString.c_str(), sizeof(sendData));
-    send(threadSocketDescriptor, sendData, sizeof(sendData), 0);
   }
+  if (process(receiveString))
+  {
+    break;
+  }
+  memset(sendData, '\0', sizeof(sendData));
+  sendString = "Payment received, retransmitting to server\n";
+  strncpy(sendData, sendString.c_str(), sizeof(sendData));
+  send(threadSocketDescriptor, sendData, sizeof(sendData), 0);
+
   info("Thread " + to_string(threadSocketDescriptor) + " terminated\n");
   close(threadSocketDescriptor);
 
