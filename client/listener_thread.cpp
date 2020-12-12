@@ -60,7 +60,7 @@ void ListenerThread::startListen()
   while (true)
   {
     struct sockaddr_in incomingClientInfo;
-    int infoSize = sizeof(incomingClientInfo);
+    socklen_t infoSize = sizeof(incomingClientInfo);
     int incomingClientSocketDescriptor = accept(listenerSocketDescriptor, (struct sockaddr *)&incomingClientInfo, &infoSize);
     if (incomingClientSocketDescriptor <= 0)
     {
