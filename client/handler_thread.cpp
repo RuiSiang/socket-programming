@@ -34,11 +34,8 @@ void HandlerThread::handler()
       break;
     }
   }
-  if (process(receiveString))
-  {
-    break;
-  }
-  memset(sendData, '\0', sizeof(sendData));
+  process(receiveString)
+      memset(sendData, '\0', sizeof(sendData));
   sendString = "Payment received, retransmitting to server\n";
   strncpy(sendData, sendString.c_str(), sizeof(sendData));
   send(threadSocketDescriptor, sendData, sizeof(sendData), 0);
@@ -51,24 +48,18 @@ void HandlerThread::handler()
 
 int HandlerThread::process(string receiveString)
 {
-  if (receiveString == "Exit")
+  string segment;
+  vector<string> segments;
+  segments.clear();
+  stringstream receiveStream(receiveString);
+  while (getline(receiveStream, segment, '#'))
   {
-    return 1;
+    segments.push_back(segment);
   }
-  else
-  {
-    string segment;
-    vector<string> segments;
-    segments.clear();
-    stringstream receiveStream(receiveString);
-    while (getline(receiveStream, segment, '#'))
-    {
-      segments.push_back(segment);
-    }
-    string sender = segments[0];
-    string amount = segments[1];
-    info("Received incoming transaction: " + sender + " sent " + amount + ". Retransmitting to server\n");
-    //info(mainSocketControl->sendCommand(receiveString));
-  }
+  string sender = segments[0];
+  string amount = segments[1];
+  info("Received incoming transaction: " + sender + " sent " + amount + ". Retransmitting to server\n");
+  //info(mainSocketControl->sendCommand(receiveString));
+
   return 0;
 }
