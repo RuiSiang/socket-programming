@@ -128,7 +128,11 @@ int main(int argc, char *argv[])
   {
     string command;
     cin >> command;
-    if (command == "balance")
+    if (command == "whoami")
+    {
+      cout << "User: " << username << "\n";
+    }
+    else if (command == "balance")
     {
       int balance = getBalance();
       cout << "Balance: " << balance << "\n";
