@@ -34,8 +34,8 @@ void HandlerThread::handler()
       break;
     }
   }
-  process(receiveString)
-      memset(sendData, '\0', sizeof(sendData));
+  process(receiveString);
+  memset(sendData, '\0', sizeof(sendData));
   sendString = "Payment received, retransmitting to server\n";
   strncpy(sendData, sendString.c_str(), sizeof(sendData));
   send(threadSocketDescriptor, sendData, sizeof(sendData), 0);
