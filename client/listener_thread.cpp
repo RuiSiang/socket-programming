@@ -6,17 +6,23 @@
 #include <cstring>
 #include <thread>
 #include <unistd.h>
+
+#define LISTENER_NUM 10
+
+#ifdef __linux__
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-
-#define LISTENER_NUM 10
+#elif _WIN32
+#include <WinSock2.h>
+#endif
 
 using namespace std;
 
 ListenerThread::ListenerThread(int port, SocketControl *_mainsocketControl)
 {
-  //socket initialization start
+//socket initialization start
+
   mainSocketControl = _mainsocketControl;
   listenerSocketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
   if (listenerSocketDescriptor == -1)
@@ -54,14 +60,14 @@ void ListenerThread::startListen()
   while (true)
   {
     struct sockaddr_in incomingClientInfo;
-    unsigned int infoSize = sizeof(incomingClientInfo);
+    int infoSize = sizeof(incomingClientInfo);
     int incomingClientSocketDescriptor = accept(listenerSocketDescriptor, (struct sockaddr *)&incomingClientInfo, &infoSize);
     if (incomingClientSocketDescriptor <= 0)
     {
       break;
     }
     info("Incoming request assigned with descriptor " + to_string(incomingClientSocketDescriptor) + " ");
-    info("(originated from ip: " + string(inet_ntoa(incomingClientInfo.sin_addr)) + ", port: "+to_string(ntohs(incomingClientInfo.sin_port))+")\n");
+    info("(originated from ip: " + string(inet_ntoa(incomingClientInfo.sin_addr)) + ", port: " + to_string(ntohs(incomingClientInfo.sin_port)) + ")\n");
 
     HandlerThread *newThread = new HandlerThread(incomingClientSocketDescriptor, mainSocketControl);
     thread sth(&HandlerThread::handler, newThread);

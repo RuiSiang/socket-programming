@@ -3,8 +3,8 @@ all: client clean
 #variables
 CC = g++
 INCLUDE = .
-CFLAGS = -Wall -Wextra -ansi -g -std=c++14
-PFLAGS = -O3 -lpthread
+CFLAGS = -Wall -Wextra -g -std=c++14
+PFLAGS = -O3 -lpthread #-lws2_32 #uncomment that for windows compiler
 
 #runner
 client: client.o listener_thread.o handler_thread.o socket_control.o logger.o

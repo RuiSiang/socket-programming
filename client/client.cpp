@@ -3,9 +3,15 @@
 
 #include <iostream>
 #include <cstring>
+#include <sstream>
 #include <iomanip>
-#include <vector>
 #include <thread>
+#include <vector>
+#include <stdint.h>
+
+#ifdef _WIN32
+#include <WinSock2.h>
+#endif
 
 using namespace std;
 
@@ -18,6 +24,10 @@ SocketControl *mainSocketControl;
 
 int main(int argc, char *argv[])
 {
+#ifdef WIN32
+  WSADATA wsaData;
+  WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
   //connection initialization start
   mainSocketControl = new SocketControl;
   while (true)
@@ -196,6 +206,9 @@ int main(int argc, char *argv[])
   t1.join();
   cout << "Socket closed\n";
   mainSocketControl->terminate();
+#ifdef _WIN32
+  WSACleanup();
+#endif
   return 0;
 }
 
