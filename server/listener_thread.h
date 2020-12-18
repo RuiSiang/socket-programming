@@ -6,9 +6,9 @@
 #include <string>
 
 struct Dataset {
-    string username;
+    std::string username;
     int balance;
-    string ip;
+    std::string ip;
     int port;
     bool active;
 };
@@ -20,7 +20,7 @@ public:
 
 private:
     int listenerSocketDescriptor;
-    vector<Dataset> dataset;
+    std::vector<Dataset> dataset;
 };
 
 #endif

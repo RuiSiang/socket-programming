@@ -9,7 +9,7 @@
 class HandlerThread
 {
 public:
-  HandlerThread(int descriptor, vector<Dataset> *_dataset)
+  HandlerThread(int descriptor, std::vector<Dataset> *_dataset)
   {
     threadSocketDescriptor = descriptor;
     dataset = *_dataset;
@@ -19,7 +19,7 @@ public:
 private:
   int threadSocketDescriptor;
   int process(std::string);
-  vector<Dataset> dataset;
+  std::vector<Dataset> dataset;
 };
 
 #endif
