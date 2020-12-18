@@ -219,11 +219,11 @@ int main(int argc, char *argv[])
 int getBalance()
 {
   string sendString = "List";
-  stringstream receiveString(mainSocketControl->sendCommand(sendString));
+  stringstream receiveStream(mainSocketControl->sendCommand(sendString));
   string segment;
   vector<string> segments;
   segments.clear();
-  while (getline(receiveString, segment, '\n'))
+  while (getline(receiveStream, segment, '\n'))
   {
     segments.push_back(segment);
   }

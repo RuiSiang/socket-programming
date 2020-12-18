@@ -2,6 +2,16 @@
 #ifndef LISTENER_THREAD_H
 #define LISTENER_THREAD_H
 
+#include <vector>
+#include <string>
+
+struct Dataset {
+    string username;
+    int balance;
+    string ip;
+    int port;
+    bool active;
+};
 class ListenerThread
 {
 public:
@@ -10,6 +20,7 @@ public:
 
 private:
     int listenerSocketDescriptor;
+    vector<Dataset> dataset;
 };
 
 #endif

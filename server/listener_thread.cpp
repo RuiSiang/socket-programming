@@ -6,8 +6,14 @@
 #include <thread>
 #include <unistd.h>
 #include <sys/types.h>
+
+#ifdef __linux__
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#elif _WIN32
+#include <WinSock2.h>
+#endif
 
 using namespace std;
 
@@ -19,7 +25,9 @@ ListenerThread::ListenerThread(int port)
   {
     cout << "Listener Socket Creation Failed\n";
     exit(-1);
-  } else{
+  }
+  else
+  {
     cout << "Listener Established\n";
   }
   //socket initialization end
@@ -35,7 +43,9 @@ ListenerThread::ListenerThread(int port)
   {
     cout << "Bind port failed, please try again\n";
     exit(-1);
-  } else{
+  }
+  else
+  {
     cout << "Binded on port " << port << "\n";
   }
   //connection initialization end
@@ -43,6 +53,7 @@ ListenerThread::ListenerThread(int port)
 void ListenerThread::startListen(int listenerNum)
 {
   listen(listenerSocketDescriptor, listenerNum);
+  dataset.clear();
   while (true)
   {
     struct sockaddr_in incomingClientInfo;
@@ -55,7 +66,7 @@ void ListenerThread::startListen(int listenerNum)
     cout << "Incoming request assigned with descriptor " << incomingClientSocketDescriptor << " ";
     cout << "(originated from ip: " << inet_ntoa(incomingClientInfo.sin_addr) << ", port: " << ntohs(incomingClientInfo.sin_port) << ")\n";
 
-    HandlerThread *newThread = new HandlerThread(incomingClientSocketDescriptor);
+    HandlerThread *newThread = new HandlerThread(incomingClientSocketDescriptor, &dataset);
     thread sth(&HandlerThread::handler, newThread);
     sth.detach();
   }

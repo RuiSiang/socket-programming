@@ -1,14 +1,21 @@
 #include "handler_thread.h"
 
 #include <iostream>
+#include <sstream>
 #include <cstring>
 #include <thread>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 
 #define CHUNK_SIZE 100
+
+#ifdef __linux__
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#elif _WIN32
+#include <WinSock2.h>
+#endif
 
 using namespace std;
 
@@ -53,7 +60,19 @@ int HandlerThread::process(string receiveString)
   }
   else
   {
-    cout << receiveString;
+    //cout << receiveString;
+    stringstream receiveStream(receiveString);
+    string segment;
+    vector<string> segments;
+    segments.clear();
+    while (getline(receiveStream, segment, '#'))
+    {
+      segments.push_back(segment);
+    }
+    for (int i = 0; i < segments.size(); i++)
+    {
+      cout << segments[i] << "\n";
+    }
   }
   return 0;
 }
