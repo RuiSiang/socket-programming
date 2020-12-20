@@ -154,6 +154,7 @@ int HandlerThread::process(string receiveString)
                 sendString += dataset[i].username + '#' + dataset[i].ip + '#' + to_string(dataset[i].port) + '\n';
               }
             }
+            found = 1;
             break;
           }
           else if (dataset[i].username == segments[0] && dataset[i].active == 1)
