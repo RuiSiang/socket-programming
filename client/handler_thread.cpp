@@ -64,7 +64,7 @@ int HandlerThread::process(string receiveString)
   string sender = segments[0];
   string amount = segments[1];
   info("Received incoming transaction: " + sender + " sent " + amount + ". Retransmitting to server\n");
-  //info(mainSocketControl->sendCommand(receiveString));
+  info(mainSocketControl->sendCommand(receiveString));
 
   return 0;
 }

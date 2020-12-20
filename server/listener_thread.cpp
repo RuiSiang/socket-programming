@@ -66,7 +66,7 @@ void ListenerThread::startListen(int listenerNum)
     cout << "Incoming request assigned with descriptor " << incomingClientSocketDescriptor << " ";
     cout << "(originated from ip: " << inet_ntoa(incomingClientInfo.sin_addr) << ", port: " << ntohs(incomingClientInfo.sin_port) << ")\n";
 
-    HandlerThread *newThread = new HandlerThread(incomingClientSocketDescriptor, &dataset);
+    HandlerThread *newThread = new HandlerThread(incomingClientSocketDescriptor, &dataset, string(inet_ntoa(incomingClientInfo.sin_addr)));
     thread sth(&HandlerThread::handler, newThread);
     sth.detach();
   }

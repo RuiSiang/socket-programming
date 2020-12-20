@@ -56,6 +56,18 @@ int HandlerThread::process(string receiveString)
 {
   if (receiveString == "Exit")
   {
+    for (int i = 0; i < dataset.size(); i++)
+    {
+      if (dataset[i].username == username)
+      {
+        dataset[i].active = 0;
+      }
+    }
+    char sendData[CHUNK_SIZE];
+    string sendString = "Bye";
+    memset(sendData, '\0', sizeof(sendData));
+    strncpy(sendData, sendString.c_str(), sizeof(sendData));
+    send(threadSocketDescriptor, sendData, sizeof(sendData), 0);
     return 1;
   }
   else
@@ -69,9 +81,119 @@ int HandlerThread::process(string receiveString)
     {
       segments.push_back(segment);
     }
-    for (int i = 0; i < segments.size(); i++)
+    string sendString = "";
+    if (segments[0] == "REGISTER")
     {
-      cout << segments[i] << "\n";
+      Dataset tmp;
+      tmp.username = segments[1];
+      tmp.balance = stoi(segments[2]);
+      bool duplicate = 0;
+      for (int i = 0; i < dataset.size(); i++)
+      {
+        if (dataset[i].username == tmp.username)
+        {
+          duplicate = 1;
+          break;
+        }
+      }
+      if (duplicate)
+      {
+        sendString = "210 FAIL\n";
+      }
+      else
+      {
+        dataset.push_back(tmp);
+        sendString = "100 OK\n";
+      }
+    }
+    else if (segments[0] == "List")
+    {
+      for (int i = 0; i < dataset.size(); i++)
+      {
+        if (dataset[i].username == username)
+        {
+          sendString += to_string(dataset[i].balance) + '\n';
+          break;
+        }
+      }
+      sendString += to_string(dataset.size()) + '\n';
+      for (int i = 0; i < dataset.size(); i++)
+      {
+        if (dataset[i].active)
+        {
+          sendString += dataset[i].username + '#' + dataset[i].ip + '#' + to_string(dataset[i].port) + '\n';
+        }
+      }
+    }
+    else
+    {
+      if (segments.size() == 2)
+      {
+        bool found = 0;
+        for (int i = 0; i < dataset.size(); i++)
+        {
+          if (dataset[i].username == segments[0] && dataset[i].active == 0)
+          {
+            dataset[i].active = 1;
+            dataset[i].ip = ip;
+            dataset[i].port = stoi(segments[1]);
+            for (int i = 0; i < dataset.size(); i++)
+            {
+              if (dataset[i].username == username)
+              {
+                sendString += to_string(dataset[i].balance) + '\n';
+                break;
+              }
+            }
+            sendString += to_string(dataset.size()) + '\n';
+            for (int i = 0; i < dataset.size(); i++)
+            {
+              if (dataset[i].active)
+              {
+                sendString += dataset[i].username + '#' + dataset[i].ip + '#' + to_string(dataset[i].port) + '\n';
+              }
+            }
+            break;
+          }
+          else if (dataset[i].username == segments[0] && dataset[i].active == 1)
+          {
+            sendString = "This account has been logged in!\n";
+            break;
+          }
+        }
+        if (found == 0)
+        {
+          sendString = "220 AUTH_FAIL\n";
+        }
+      }
+      else if (segments.size() == 3)
+      {
+        for (int i = 0; i < dataset.size(); i++)
+        {
+          if (dataset[i].username == segments[0])
+          {
+            dataset[i].balance -= stoi(segments[1]);
+          }
+          else if (dataset[i].username == segments[2])
+          {
+            dataset[i].balance -= stoi(segments[1]);
+          }
+        }
+        sendString = "Transaction Successfully Submitted\n";
+      }
+    }
+    char sendData[CHUNK_SIZE];
+    int index = 0;
+    while (true)
+    {
+      memset(sendData, '\0', sizeof(sendData));
+      strncpy(sendData, sendString.substr(index * CHUNK_SIZE, CHUNK_SIZE).c_str(), sizeof(sendData));
+      send(threadSocketDescriptor, sendData, sizeof(sendData), 0);
+      if (sendData[CHUNK_SIZE - 1] == '\0')
+      {
+        break;
+      }
+      index++;
     }
   }
   return 0;

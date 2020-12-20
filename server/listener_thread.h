@@ -10,7 +10,7 @@ struct Dataset {
     int balance;
     std::string ip;
     int port;
-    bool active;
+    bool active=0;
 };
 class ListenerThread
 {
