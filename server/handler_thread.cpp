@@ -109,6 +109,7 @@ int HandlerThread::process(string receiveString)
     }
     else if (segments[0] == "List")
     {
+      cout << username << " requested list\n";
       for (int i = 0; i < dataset->size(); i++)
       {
         if (dataset->at(i).username == username)
@@ -154,6 +155,7 @@ int HandlerThread::process(string receiveString)
                 sendString += dataset->at(i).username + '#' + dataset->at(i).ip + '#' + to_string(dataset->at(i).port) + '\n';
               }
             }
+            cout << "User logged in: " << segments[0] << "\n";
             username = segments[0];
             found = 1;
             break;
@@ -171,6 +173,7 @@ int HandlerThread::process(string receiveString)
       }
       else if (segments.size() == 3)
       {
+        cout << "Transaction Received: " << segments[0] << " sent " << segments[1] << " to " << segments[2] << "\n";
         for (int i = 0; i < dataset->size(); i++)
         {
           if (dataset->at(i).username == segments[0])

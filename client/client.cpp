@@ -196,7 +196,6 @@ int main(int argc, char *argv[])
     {
       string sendString = "Exit";
       string receiveString = mainSocketControl->sendCommand(sendString);
-      cout << receiveString;
       break;
     }
     else
