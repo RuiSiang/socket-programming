@@ -102,6 +102,7 @@ int HandlerThread::process(string receiveString)
       }
       else
       {
+        cout << "User Registered: " << tmp.username << " with balance " << tmp.balance << "\n";
         dataset.push_back(tmp);
         sendString = "100 OK\n";
       }
