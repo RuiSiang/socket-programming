@@ -12,7 +12,7 @@ public:
   HandlerThread(int descriptor, std::vector<Dataset> *_dataset, std::string _ip)
   {
     threadSocketDescriptor = descriptor;
-    dataset = *_dataset;
+    dataset = _dataset;
     ip = _ip;
   }
   void handler();
@@ -20,7 +20,7 @@ public:
 private:
   int threadSocketDescriptor;
   int process(std::string);
-  std::vector<Dataset> dataset;
+  std::vector<Dataset> *dataset;
   std::string username;
   std::string ip;
 };

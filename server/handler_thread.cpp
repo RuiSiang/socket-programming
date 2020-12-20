@@ -56,11 +56,11 @@ int HandlerThread::process(string receiveString)
 {
   if (receiveString == "Exit")
   {
-    for (int i = 0; i < dataset.size(); i++)
+    for (int i = 0; i < dataset->size(); i++)
     {
-      if (dataset[i].username == username)
+      if (dataset->at(i).username == username)
       {
-        dataset[i].active = 0;
+        dataset->at(i).active = 0;
       }
     }
     char sendData[CHUNK_SIZE];
@@ -88,9 +88,9 @@ int HandlerThread::process(string receiveString)
       tmp.username = segments[1];
       tmp.balance = stoi(segments[2]);
       bool duplicate = 0;
-      for (int i = 0; i < dataset.size(); i++)
+      for (int i = 0; i < dataset->size(); i++)
       {
-        if (dataset[i].username == tmp.username)
+        if (dataset->at(i).username == tmp.username)
         {
           duplicate = 1;
           break;
@@ -103,26 +103,26 @@ int HandlerThread::process(string receiveString)
       else
       {
         cout << "User Registered: " << tmp.username << " with balance " << tmp.balance << "\n";
-        dataset.push_back(tmp);
+        dataset->push_back(tmp);
         sendString = "100 OK\n";
       }
     }
     else if (segments[0] == "List")
     {
-      for (int i = 0; i < dataset.size(); i++)
+      for (int i = 0; i < dataset->size(); i++)
       {
-        if (dataset[i].username == username)
+        if (dataset->at(i).username == username)
         {
-          sendString += to_string(dataset[i].balance) + '\n';
+          sendString += to_string(dataset->at(i).balance) + '\n';
           break;
         }
       }
-      sendString += to_string(dataset.size()) + '\n';
-      for (int i = 0; i < dataset.size(); i++)
+      sendString += to_string(dataset->size()) + '\n';
+      for (int i = 0; i < dataset->size(); i++)
       {
-        if (dataset[i].active)
+        if (dataset->at(i).active)
         {
-          sendString += dataset[i].username + '#' + dataset[i].ip + '#' + to_string(dataset[i].port) + '\n';
+          sendString += dataset->at(i).username + '#' + dataset->at(i).ip + '#' + to_string(dataset->at(i).port) + '\n';
         }
       }
     }
@@ -131,33 +131,34 @@ int HandlerThread::process(string receiveString)
       if (segments.size() == 2)
       {
         bool found = 0;
-        for (int i = 0; i < dataset.size(); i++)
+        for (int i = 0; i < dataset->size(); i++)
         {
-          if (dataset[i].username == segments[0] && dataset[i].active == 0)
+          if (dataset->at(i).username == segments[0] && dataset->at(i).active == 0)
           {
-            dataset[i].active = 1;
-            dataset[i].ip = ip;
-            dataset[i].port = stoi(segments[1]);
-            for (int i = 0; i < dataset.size(); i++)
+            dataset->at(i).active = 1;
+            dataset->at(i).ip = ip;
+            dataset->at(i).port = stoi(segments[1]);
+            for (int i = 0; i < dataset->size(); i++)
             {
-              if (dataset[i].username == username)
+              if (dataset->at(i).username == username)
               {
-                sendString += to_string(dataset[i].balance) + '\n';
+                sendString += to_string(dataset->at(i).balance) + '\n';
                 break;
               }
             }
-            sendString += to_string(dataset.size()) + '\n';
-            for (int i = 0; i < dataset.size(); i++)
+            sendString += to_string(dataset->size()) + '\n';
+            for (int i = 0; i < dataset->size(); i++)
             {
-              if (dataset[i].active)
+              if (dataset->at(i).active)
               {
-                sendString += dataset[i].username + '#' + dataset[i].ip + '#' + to_string(dataset[i].port) + '\n';
+                sendString += dataset->at(i).username + '#' + dataset->at(i).ip + '#' + to_string(dataset->at(i).port) + '\n';
               }
             }
+            username = segments[0];
             found = 1;
             break;
           }
-          else if (dataset[i].username == segments[0] && dataset[i].active == 1)
+          else if (dataset->at(i).username == segments[0] && dataset->at(i).active == 1)
           {
             sendString = "This account has been logged in!\n";
             break;
@@ -170,15 +171,15 @@ int HandlerThread::process(string receiveString)
       }
       else if (segments.size() == 3)
       {
-        for (int i = 0; i < dataset.size(); i++)
+        for (int i = 0; i < dataset->size(); i++)
         {
-          if (dataset[i].username == segments[0])
+          if (dataset->at(i).username == segments[0])
           {
-            dataset[i].balance -= stoi(segments[1]);
+            dataset->at(i).balance -= stoi(segments[1]);
           }
-          else if (dataset[i].username == segments[2])
+          else if (dataset->at(i).username == segments[2])
           {
-            dataset[i].balance -= stoi(segments[1]);
+            dataset->at(i).balance -= stoi(segments[1]);
           }
         }
         sendString = "Transaction Successfully Submitted\n";
