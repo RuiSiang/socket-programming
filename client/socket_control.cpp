@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-#define CHUNK_SIZE 100
+#define CHUNK_SIZE 4096
 
 #ifdef __linux__
 #include <sys/types.h>

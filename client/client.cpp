@@ -1,5 +1,6 @@
 #include "listener_thread.h"
 #include "socket_control.h"
+#include "ssl_handler.h"
 
 #include <iostream>
 #include <cstring>
@@ -30,6 +31,7 @@ int main(int argc, char *argv[])
 #endif
   //connection initialization start
   mainSocketControl = new SocketControl;
+  SslHandler *sslHandler = new SslHandler;
   while (true)
   {
     char ip[100];
@@ -118,7 +120,7 @@ int main(int argc, char *argv[])
       cout << "Port number must be in range 1024~65536\n";
     }
   }
-  ListenerThread *masterListenThread = new ListenerThread(clientPort, mainSocketControl);
+  ListenerThread *masterListenThread = new ListenerThread(clientPort, mainSocketControl, sslHandler);
   thread t1(&ListenerThread::startListen, masterListenThread);
   //login end
 

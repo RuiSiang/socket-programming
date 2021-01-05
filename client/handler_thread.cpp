@@ -8,7 +8,7 @@
 #include <thread>
 #include <unistd.h>
 
-#define CHUNK_SIZE 100
+#define CHUNK_SIZE 4096
 
 #ifdef __linux__
 #include <sys/types.h>
@@ -61,10 +61,20 @@ int HandlerThread::process(string receiveString)
   {
     segments.push_back(segment);
   }
-  string sender = segments[0];
-  string amount = segments[1];
-  info("Received incoming transaction: " + sender + " sent " + amount + ". Retransmitting to server\n");
-  info(mainSocketControl->sendCommand(receiveString));
-
+  if (segments[0] == "getpub")
+  {
+    info("Received getpub request");
+    char sendData[CHUNK_SIZE];
+    memset(sendData, '\0', sizeof(sendData));
+    strncpy(sendData, (sslHandler->getPublicKey()).c_str(), sizeof(sendData));
+    send(threadSocketDescriptor, sendData, sizeof(sendData), 0);
+  }
+  else
+  {
+    string sender = segments[0];
+    string amount = segments[1];
+    info("Received incoming transaction: " + sender + " sent " + amount + ". Retransmitting to server\n");
+    info(mainSocketControl->sendCommand(receiveString));
+  }
   return 0;
 }

@@ -1,5 +1,4 @@
 #include "listener_thread.h"
-#include "handler_thread.h"
 #include "logger.h"
 
 #include <iostream>
@@ -19,11 +18,12 @@
 
 using namespace std;
 
-ListenerThread::ListenerThread(int port, SocketControl *_mainsocketControl)
+ListenerThread::ListenerThread(int port, SocketControl *_mainsocketControl, SslHandler *_sslHandler)
 {
-//socket initialization start
+  //socket initialization start
 
   mainSocketControl = _mainsocketControl;
+  sslHandler = _sslHandler;
   listenerSocketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
   if (listenerSocketDescriptor == -1)
   {
@@ -69,7 +69,7 @@ void ListenerThread::startListen()
     info("Incoming request assigned with descriptor " + to_string(incomingClientSocketDescriptor) + " ");
     info("(originated from ip: " + string(inet_ntoa(incomingClientInfo.sin_addr)) + ", port: " + to_string(ntohs(incomingClientInfo.sin_port)) + ")\n");
 
-    HandlerThread *newThread = new HandlerThread(incomingClientSocketDescriptor, mainSocketControl);
+    HandlerThread *newThread = new HandlerThread(incomingClientSocketDescriptor, mainSocketControl, sslHandler);
     thread sth(&HandlerThread::handler, newThread);
     sth.detach();
   }
