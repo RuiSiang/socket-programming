@@ -109,7 +109,7 @@ int HandlerThread::process(string receiveString)
     }
     else
     {
-
+      cout << receiveString << "\n";
       stringstream receiveStream(receiveString);
       string segment;
       vector<string> segments;

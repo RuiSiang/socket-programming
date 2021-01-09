@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
   //login end
 
   //functionals start
-  cout << "\033c==============================\nCommands\nAvailable commands:\nbalance - get current account balance\nlist - list current accounts\nsendtx - send transaction\nlogout - log out and exit\n==============================\n\n";
+  cout << "\033c==============================\nCommands\nAvailable commands:\nbalance - get current account balance\nlist - list current accounts\nsendtx - send transaction\nwhoami - get user name\nlogout - log out and exit\n==============================\n\n";
   while (true)
   {
     string command;
