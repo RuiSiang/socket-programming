@@ -85,6 +85,7 @@ int HandlerThread::process(string receiveString)
     string pubkey = string(receiveData);*/
 
     receiveString = sslHandler->decryptMessage(receiveString);
+    info(receiveString);
     //receiveString = sslHandler->prvDecryptMessage(receiveString, pubkey);
     string segment;
     vector<string> segments;
