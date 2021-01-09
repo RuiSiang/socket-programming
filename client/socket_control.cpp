@@ -57,14 +57,16 @@ int SocketControl::bind(char ip[100], int port)
 
 string SocketControl::sendCommand(string sendString)
 {
+  info("Signing with prv\n");
+  sendString = sslHandler->prvEncryptMessage(sendString);
+
   char sendData[CHUNK_SIZE], receiveData[CHUNK_SIZE];
   memset(sendData, '\0', sizeof(sendData));
   strncpy(sendData, string("getpub").c_str(), sizeof(sendData));
   send(socketDescriptor, sendData, sizeof(sendData), 0);
   recv(socketDescriptor, receiveData, sizeof(receiveData), 0);
   string pubkey = string(receiveData);
-
-  //sendString = sslHandler->prvEncryptMessage(sendString);
+  info("Encrypting with recepient pub");
   sendString = sslHandler->encryptMessage(sendString, pubkey);
   memset(sendData, '\0', sizeof(sendData));
   strncpy(sendData, sendString.c_str(), sizeof(sendData));

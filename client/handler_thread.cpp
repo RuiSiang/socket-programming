@@ -19,7 +19,7 @@
 #endif
 
 using namespace std;
-
+string serverpubkey = "";
 void HandlerThread::handler()
 {
   char sendData[CHUNK_SIZE], receiveData[CHUNK_SIZE];
@@ -64,7 +64,9 @@ int HandlerThread::process(string receiveString)
   }
   else
   {
-    /*char sendData[CHUNK_SIZE], receiveData[CHUNK_SIZE];
+    info("Received incoming transaction\n");
+    receiveString = sslHandler->decryptMessage(receiveString);
+    char sendData[CHUNK_SIZE], receiveData[CHUNK_SIZE];
     memset(sendData, '\0', sizeof(sendData));
     strncpy(sendData, string("getpub").c_str(), sizeof(sendData));
     SocketControl tmpSocketControl(sslHandler);
@@ -82,11 +84,10 @@ int HandlerThread::process(string receiveString)
     int err = tmpSocketControl.bind(ipArr, stoi(recepientPort));
     send(tmpSocketControl.socketDescriptor, sendData, sizeof(sendData), 0);
     recv(tmpSocketControl.socketDescriptor, receiveData, sizeof(receiveData), 0);
-    string pubkey = string(receiveData);*/
+    string pubkey = string(receiveData);
+    info(" Validity test, test decrypting with sender pub\n");
 
-    receiveString = sslHandler->decryptMessage(receiveString);
-    info(receiveString);
-    //receiveString = sslHandler->prvDecryptMessage(receiveString, pubkey);
+    receiveString = sslHandler->prvDecryptMessage(receiveString, pubkey);
     string segment;
     vector<string> segments;
     segments.clear();
@@ -97,8 +98,15 @@ int HandlerThread::process(string receiveString)
     }
     string sender = segments[0];
     string amount = segments[1];
-    info("Received incoming transaction: Signing and retransmitting to server\n");
+    info("Transaction content:" + sender + " sent " + amount + "\n");
+    info("Encrypting with prv\n");
+    receiveString = sslHandler->prvEncryptMessage(receiveString);
+
+    info("Encrypting with server pub\n");
+    receiveString = sslHandler->encryptMessage(receiveString, serverpubkey);
+
     info(mainSocketControl->sendCommand(receiveString));
+    info("Transaction Successfully Submitted\n");
   }
   return 0;
 }

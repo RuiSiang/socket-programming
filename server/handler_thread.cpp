@@ -63,7 +63,10 @@ int HandlerThread::process(string receiveString)
   }
   else
   {
+    cout << "Decrypting with prv\n";
+    receiveString = sslHandler->decryptMessage(receiveString);
 
+    cout << "Decrypting with sender and receiver pub\n";
     char sendData[CHUNK_SIZE], receiveData[CHUNK_SIZE];
     memset(sendData, '\0', sizeof(sendData));
     strncpy(sendData, string("getpub").c_str(), sizeof(sendData));
@@ -77,7 +80,7 @@ int HandlerThread::process(string receiveString)
         recepientPort = userData[i].port;
       }
     }
-    /*char ipArr[100];
+    char ipArr[100];
     strncpy(ipArr, ip.c_str(), sizeof(recepientPort));
     struct sockaddr_in connectionInfo;
     memset(&connectionInfo, 0, sizeof(connectionInfo));
@@ -87,10 +90,29 @@ int HandlerThread::process(string receiveString)
     int err = connect(tmpSocketDescriptor, (struct sockaddr *)&connectionInfo, sizeof(connectionInfo));
     send(tmpSocketDescriptor, sendData, sizeof(sendData), 0);
     recv(tmpSocketDescriptor, receiveData, sizeof(receiveData), 0);
-    string pubkey = string(receiveData);*/
+    string pubkey = string(receiveData);
+    receiveString = sslHandler->prvDecryptMessage(receiveString, pubkey);
 
-    receiveString = sslHandler->decryptMessage(receiveString);
-    //receiveString = sslHandler->prvDecryptMessage(receiveString, pubkey);
+    for (int i = 0; i < userData.size(); i++)
+    {
+      if (userData[i].ip == ip)
+      {
+        recepientPort = userData[i].port;
+      }
+    }
+    char ipArr[100];
+    strncpy(ipArr, ip.c_str(), sizeof(recepientPort));
+    struct sockaddr_in connectionInfo;
+    memset(&connectionInfo, 0, sizeof(connectionInfo));
+    connectionInfo.sin_family = PF_INET;
+    connectionInfo.sin_addr.s_addr = inet_addr(ipArr);
+    connectionInfo.sin_port = htons(stoi(recepientPort));
+    int err = connect(tmpSocketDescriptor, (struct sockaddr *)&connectionInfo, sizeof(connectionInfo));
+    send(tmpSocketDescriptor, sendData, sizeof(sendData), 0);
+    recv(tmpSocketDescriptor, receiveData, sizeof(receiveData), 0);
+    string pubkey = string(receiveData);
+    receiveString = sslHandler->prvDecryptMessage(receiveString, pubkey);
+
     if (receiveString == "Exit")
     {
       for (int i = 0; i < dataset->size(); i++)
@@ -210,7 +232,7 @@ int HandlerThread::process(string receiveString)
         }
         else if (segments.size() == 3)
         {
-          cout << "Transaction Received: " << segments[0] << " sent " << segments[1] << " to " << segments[2] << "\n";
+          cout << "Transaction content:" << segments[0] << " sent " << segments[1] << " to " << segments[2] << "\n";
           for (int i = 0; i < dataset->size(); i++)
           {
             if (dataset->at(i).username == segments[0])
