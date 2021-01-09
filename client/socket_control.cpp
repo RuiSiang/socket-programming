@@ -64,7 +64,7 @@ string SocketControl::sendCommand(string sendString)
   recv(socketDescriptor, receiveData, sizeof(receiveData), 0);
   string pubkey = string(receiveData);
 
-  sendString = sslHandler->prvEncryptMessage(sendString);
+  //sendString = sslHandler->prvEncryptMessage(sendString);
   sendString = sslHandler->encryptMessage(sendString, pubkey);
   memset(sendData, '\0', sizeof(sendData));
   strncpy(sendData, sendString.c_str(), sizeof(sendData));

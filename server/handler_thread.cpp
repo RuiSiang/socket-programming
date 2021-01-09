@@ -77,7 +77,7 @@ int HandlerThread::process(string receiveString)
         recepientPort = userData[i].port;
       }
     }
-    char ipArr[100];
+    /*char ipArr[100];
     strncpy(ipArr, ip.c_str(), sizeof(recepientPort));
     struct sockaddr_in connectionInfo;
     memset(&connectionInfo, 0, sizeof(connectionInfo));
@@ -87,10 +87,10 @@ int HandlerThread::process(string receiveString)
     int err = connect(tmpSocketDescriptor, (struct sockaddr *)&connectionInfo, sizeof(connectionInfo));
     send(tmpSocketDescriptor, sendData, sizeof(sendData), 0);
     recv(tmpSocketDescriptor, receiveData, sizeof(receiveData), 0);
-    string pubkey = string(receiveData);
+    string pubkey = string(receiveData);*/
 
     receiveString = sslHandler->decryptMessage(receiveString);
-    receiveString = sslHandler->prvDecryptMessage(receiveString, pubkey);
+    //receiveString = sslHandler->prvDecryptMessage(receiveString, pubkey);
     if (receiveString == "Exit")
     {
       for (int i = 0; i < dataset->size(); i++)

@@ -64,7 +64,7 @@ int HandlerThread::process(string receiveString)
   }
   else
   {
-    char sendData[CHUNK_SIZE], receiveData[CHUNK_SIZE];
+    /*char sendData[CHUNK_SIZE], receiveData[CHUNK_SIZE];
     memset(sendData, '\0', sizeof(sendData));
     strncpy(sendData, string("getpub").c_str(), sizeof(sendData));
     SocketControl tmpSocketControl(sslHandler);
@@ -82,10 +82,10 @@ int HandlerThread::process(string receiveString)
     int err = tmpSocketControl.bind(ipArr, stoi(recepientPort));
     send(tmpSocketControl.socketDescriptor, sendData, sizeof(sendData), 0);
     recv(tmpSocketControl.socketDescriptor, receiveData, sizeof(receiveData), 0);
-    string pubkey = string(receiveData);
+    string pubkey = string(receiveData);*/
 
     receiveString = sslHandler->decryptMessage(receiveString);
-    receiveString = sslHandler->prvDecryptMessage(receiveString, pubkey);
+    //receiveString = sslHandler->prvDecryptMessage(receiveString, pubkey);
     string segment;
     vector<string> segments;
     segments.clear();
