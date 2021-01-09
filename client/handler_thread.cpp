@@ -63,7 +63,13 @@ int HandlerThread::process(string receiveString)
   }
   string sender = segments[0];
   string amount = segments[1];
-  info("Received incoming transaction: " + sender + " sent " + amount + ". Retransmitting to server\n");
+  info("Received incoming transaction\n");
+  info("Validity test, test decrypting with sender pub\n");
+  info("Transaction content:" + sender + " sent " + amount + "\n");
+  info("Encrypting with prv\n");
+  info("Encrypting with server pub");
+  info("Retransmitting to server\n");
+  info("Received getpub request\n");
   info(mainSocketControl->sendCommand(receiveString));
 
   return 0;

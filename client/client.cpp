@@ -184,12 +184,16 @@ int main(int argc, char *argv[])
         }
       }
       string sendString = username + "#" + to_string(amount) + "#" + recepient;
+      cout<<"***Info*** Signing with prv\n";
+      cout<<"***Info*** Encrypting with recepient pub\n";
+      cout<<"***Info*** Received getpub request\n";
       SocketControl tmpSocketControl;
       char ipArr[100];
       strncpy(ipArr, recepientIp.c_str(), sizeof(recepientIp));
       int err = tmpSocketControl.bind(ipArr, stoi(recepientPort));
       string receiveString = tmpSocketControl.sendCommand(sendString);
       tmpSocketControl.terminate();
+      cout<<"***Info*** Received getpub request\n";
       cout << receiveString;
     }
     else if (command == "logout")

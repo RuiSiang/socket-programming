@@ -173,7 +173,9 @@ int HandlerThread::process(string receiveString)
       }
       else if (segments.size() == 3)
       {
-        cout << "Transaction Received: " << segments[0] << " sent " << segments[1] << " to " << segments[2] << "\n";
+        cout << "Decrypting with prv\n";
+        cout << "Decrypting with sender and receiver pub\n";
+        cout << "Transaction content: " << segments[0] << " sent " << segments[1] << " to " << segments[2] << "\n";
         for (int i = 0; i < dataset->size(); i++)
         {
           if (dataset->at(i).username == segments[0])
