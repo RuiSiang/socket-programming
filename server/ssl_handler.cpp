@@ -1,5 +1,4 @@
 #include "ssl_handler.h"
-#include "logger.h"
 #include "base64.h"
 
 #include <cstring>
@@ -38,7 +37,6 @@ SslHandler::SslHandler()
   EVP_PKEY *key = NULL;
   EVP_PKEY_keygen(keyCtx, &key);
   EVP_PKEY_CTX_free(keyCtx);
-  info("Key generation successful\n");
 
   // save private key
   BIO *privateKeyBio = BIO_new(BIO_s_mem());
@@ -57,7 +55,6 @@ SslHandler::SslHandler()
   publicKey = string((char *)publicKeyArr);
   hashId = sha256(publicKey);
 
-  info("Client hash id: " + hashId + "\n"); 
 
   BIO_free_all(publicKeyBio);
 }

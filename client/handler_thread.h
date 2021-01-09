@@ -25,7 +25,7 @@ private:
   SslHandler *sslHandler;
   std::string ip;
   int process(std::string);
-  std::vector<string> getList();
+  std::vector<std::string> getList();
 };
 
 #endif
