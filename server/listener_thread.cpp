@@ -17,10 +17,11 @@
 
 using namespace std;
 
-ListenerThread::ListenerThread(int port)
+ListenerThread::ListenerThread(int port, SslHandler *_sslHandler)
 {
   //socket initialization start
   listenerSocketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
+  sslHandler = _sslHandler;
   if (listenerSocketDescriptor == -1)
   {
     cout << "Listener Socket Creation Failed\n";
@@ -66,7 +67,7 @@ void ListenerThread::startListen(int listenerNum)
     cout << "Incoming request assigned with descriptor " << incomingClientSocketDescriptor << " ";
     cout << "(originated from ip: " << inet_ntoa(incomingClientInfo.sin_addr) << ", port: " << ntohs(incomingClientInfo.sin_port) << ")\n";
 
-    HandlerThread *newThread = new HandlerThread(incomingClientSocketDescriptor, &dataset, string(inet_ntoa(incomingClientInfo.sin_addr)));
+    HandlerThread *newThread = new HandlerThread(incomingClientSocketDescriptor, &dataset, string(inet_ntoa(incomingClientInfo.sin_addr)), sslHandler);
     thread sth(&HandlerThread::handler, newThread);
     sth.detach();
   }

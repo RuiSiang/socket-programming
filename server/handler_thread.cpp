@@ -54,152 +54,190 @@ void HandlerThread::handler()
 
 int HandlerThread::process(string receiveString)
 {
-  if (receiveString == "Exit")
+  if (receiveString == "getpub")
   {
-    for (int i = 0; i < dataset->size(); i++)
-    {
-      if (dataset->at(i).username == username)
-      {
-        dataset->at(i).active = 0;
-      }
-    }
     char sendData[CHUNK_SIZE];
-    string sendString = "Bye";
     memset(sendData, '\0', sizeof(sendData));
-    strncpy(sendData, sendString.c_str(), sizeof(sendData));
+    strncpy(sendData, (sslHandler->getPublicKey()).c_str(), sizeof(sendData));
     send(threadSocketDescriptor, sendData, sizeof(sendData), 0);
-    return 1;
   }
   else
   {
-    //cout << receiveString;
-    stringstream receiveStream(receiveString);
-    string segment;
-    vector<string> segments;
-    segments.clear();
-    while (getline(receiveStream, segment, '#'))
+
+    char sendData[CHUNK_SIZE], receiveData[CHUNK_SIZE];
+    memset(sendData, '\0', sizeof(sendData));
+    strncpy(sendData, string("getpub").c_str(), sizeof(sendData));
+    int tmpSocketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
+    string recepientPort = "";
+    vector<Dataset> userData = *dataset;
+    for (int i = 0; i < userData.size(); i++)
     {
-      segments.push_back(segment);
-    }
-    string sendString = "";
-    if (segments[0] == "REGISTER")
-    {
-      Dataset tmp;
-      tmp.username = segments[1];
-      tmp.balance = stoi(segments[2]);
-      bool duplicate = 0;
-      for (int i = 0; i < dataset->size(); i++)
+      if (userData[i].ip == ip)
       {
-        if (dataset->at(i).username == tmp.username)
-        {
-          duplicate = 1;
-          break;
-        }
-      }
-      if (duplicate)
-      {
-        sendString = "210 FAIL\n";
-      }
-      else
-      {
-        cout << "User Registered: " << tmp.username << " with balance " << tmp.balance << "\n";
-        dataset->push_back(tmp);
-        sendString = "100 OK\n";
+        recepientPort = userData[i].port;
       }
     }
-    else if (segments[0] == "List")
+    char ipArr[100];
+    strncpy(ipArr, ip.c_str(), sizeof(recepientPort));
+    struct sockaddr_in connectionInfo;
+    memset(&connectionInfo, 0, sizeof(connectionInfo));
+    connectionInfo.sin_family = PF_INET;
+    connectionInfo.sin_addr.s_addr = inet_addr(ipArr);
+    connectionInfo.sin_port = htons(stoi(recepientPort));
+    int err = connect(tmpSocketDescriptor, (struct sockaddr *)&connectionInfo, sizeof(connectionInfo));
+    send(tmpSocketDescriptor, sendData, sizeof(sendData), 0);
+    recv(tmpSocketDescriptor, receiveData, sizeof(receiveData), 0);
+    string pubkey = string(receiveData);
+
+    receiveString = sslHandler->decryptMessage(receiveString);
+    receiveString = sslHandler->prvDecryptMessage(receiveString, pubkey);
+    if (receiveString == "Exit")
     {
-      cout << username << " requested list\n";
       for (int i = 0; i < dataset->size(); i++)
       {
         if (dataset->at(i).username == username)
         {
-          sendString += to_string(dataset->at(i).balance) + '\n';
-          break;
+          dataset->at(i).active = 0;
         }
       }
-      sendString += to_string(dataset->size()) + '\n';
-      for (int i = 0; i < dataset->size(); i++)
-      {
-        if (dataset->at(i).active)
-        {
-          sendString += dataset->at(i).username + '#' + dataset->at(i).ip + '#' + to_string(dataset->at(i).port) + '\n';
-        }
-      }
+      char sendData[CHUNK_SIZE];
+      string sendString = "Bye";
+      memset(sendData, '\0', sizeof(sendData));
+      strncpy(sendData, sendString.c_str(), sizeof(sendData));
+      send(threadSocketDescriptor, sendData, sizeof(sendData), 0);
+      return 1;
     }
     else
     {
-      if (segments.size() == 2)
+
+      stringstream receiveStream(receiveString);
+      string segment;
+      vector<string> segments;
+      segments.clear();
+      while (getline(receiveStream, segment, '#'))
       {
-        bool found = 0;
+        segments.push_back(segment);
+      }
+      string sendString = "";
+      if (segments[0] == "REGISTER")
+      {
+        Dataset tmp;
+        tmp.username = segments[1];
+        tmp.balance = stoi(segments[2]);
+        bool duplicate = 0;
         for (int i = 0; i < dataset->size(); i++)
         {
-          if (dataset->at(i).username == segments[0] && dataset->at(i).active == 0)
+          if (dataset->at(i).username == tmp.username)
           {
-            dataset->at(i).active = 1;
-            dataset->at(i).ip = ip;
-            dataset->at(i).port = stoi(segments[1]);
-            for (int i = 0; i < dataset->size(); i++)
-            {
-              if (dataset->at(i).username == username)
-              {
-                sendString += to_string(dataset->at(i).balance) + '\n';
-                break;
-              }
-            }
-            sendString += to_string(dataset->size()) + '\n';
-            for (int i = 0; i < dataset->size(); i++)
-            {
-              if (dataset->at(i).active)
-              {
-                sendString += dataset->at(i).username + '#' + dataset->at(i).ip + '#' + to_string(dataset->at(i).port) + '\n';
-              }
-            }
-            cout << "User logged in: " << segments[0] << "\n";
-            username = segments[0];
-            found = 1;
-            break;
-          }
-          else if (dataset->at(i).username == segments[0] && dataset->at(i).active == 1)
-          {
-            sendString = "This account has been logged in!\n";
+            duplicate = 1;
             break;
           }
         }
-        if (found == 0)
+        if (duplicate)
         {
-          sendString = "220 AUTH_FAIL\n";
+          sendString = "210 FAIL\n";
+        }
+        else
+        {
+          cout << "User Registered: " << tmp.username << " with balance " << tmp.balance << "\n";
+          dataset->push_back(tmp);
+          sendString = "100 OK\n";
         }
       }
-      else if (segments.size() == 3)
+      else if (segments[0] == "List")
       {
-        cout << "Transaction Received: " << segments[0] << " sent " << segments[1] << " to " << segments[2] << "\n";
+        cout << username << " requested list\n";
         for (int i = 0; i < dataset->size(); i++)
         {
-          if (dataset->at(i).username == segments[0])
+          if (dataset->at(i).username == username)
           {
-            dataset->at(i).balance -= stoi(segments[1]);
-          }
-          else if (dataset->at(i).username == segments[2])
-          {
-            dataset->at(i).balance -= stoi(segments[1]);
+            sendString += to_string(dataset->at(i).balance) + '\n';
+            break;
           }
         }
-        sendString = "Transaction Successfully Submitted\n";
+        sendString += to_string(dataset->size()) + '\n';
+        for (int i = 0; i < dataset->size(); i++)
+        {
+          if (dataset->at(i).active)
+          {
+            sendString += dataset->at(i).username + '#' + dataset->at(i).ip + '#' + to_string(dataset->at(i).port) + '\n';
+          }
+        }
       }
-    }
-    char sendData[CHUNK_SIZE];
-    int index = 0;
-    while (true)
-    {
-      memset(sendData, '\0', sizeof(sendData));
-      strncpy(sendData, sendString.substr(index * CHUNK_SIZE, CHUNK_SIZE).c_str(), sizeof(sendData));
-      send(threadSocketDescriptor, sendData, sizeof(sendData), 0);
-      if (sendData[CHUNK_SIZE - 1] == '\0')
+      else
       {
-        break;
+        if (segments.size() == 2)
+        {
+          bool found = 0;
+          for (int i = 0; i < dataset->size(); i++)
+          {
+            if (dataset->at(i).username == segments[0] && dataset->at(i).active == 0)
+            {
+              dataset->at(i).active = 1;
+              dataset->at(i).ip = ip;
+              dataset->at(i).port = stoi(segments[1]);
+              for (int i = 0; i < dataset->size(); i++)
+              {
+                if (dataset->at(i).username == username)
+                {
+                  sendString += to_string(dataset->at(i).balance) + '\n';
+                  break;
+                }
+              }
+              sendString += to_string(dataset->size()) + '\n';
+              for (int i = 0; i < dataset->size(); i++)
+              {
+                if (dataset->at(i).active)
+                {
+                  sendString += dataset->at(i).username + '#' + dataset->at(i).ip + '#' + to_string(dataset->at(i).port) + '\n';
+                }
+              }
+              cout << "User logged in: " << segments[0] << "\n";
+              username = segments[0];
+              found = 1;
+              break;
+            }
+            else if (dataset->at(i).username == segments[0] && dataset->at(i).active == 1)
+            {
+              sendString = "This account has been logged in!\n";
+              break;
+            }
+          }
+          if (found == 0)
+          {
+            sendString = "220 AUTH_FAIL\n";
+          }
+        }
+        else if (segments.size() == 3)
+        {
+          cout << "Transaction Received: " << segments[0] << " sent " << segments[1] << " to " << segments[2] << "\n";
+          for (int i = 0; i < dataset->size(); i++)
+          {
+            if (dataset->at(i).username == segments[0])
+            {
+              dataset->at(i).balance -= stoi(segments[1]);
+            }
+            else if (dataset->at(i).username == segments[2])
+            {
+              dataset->at(i).balance -= stoi(segments[1]);
+            }
+          }
+          sendString = "Transaction Successfully Submitted\n";
+        }
       }
-      index++;
+      char sendData[CHUNK_SIZE];
+      int index = 0;
+      while (true)
+      {
+        memset(sendData, '\0', sizeof(sendData));
+        strncpy(sendData, sendString.substr(index * CHUNK_SIZE, CHUNK_SIZE).c_str(), sizeof(sendData));
+        send(threadSocketDescriptor, sendData, sizeof(sendData), 0);
+        if (sendData[CHUNK_SIZE - 1] == '\0')
+        {
+          break;
+        }
+        index++;
+      }
     }
   }
   return 0;

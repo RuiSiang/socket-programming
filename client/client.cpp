@@ -30,8 +30,8 @@ int main(int argc, char *argv[])
   WSAStartup(MAKEWORD(2, 2), &wsaData);
 #endif
   //connection initialization start
-  mainSocketControl = new SocketControl;
   SslHandler *sslHandler = new SslHandler;
+  mainSocketControl = new SocketControl(sslHandler);
   while (true)
   {
     char ip[100];
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
         }
       }
       string sendString = username + "#" + to_string(amount) + "#" + recepient;
-      SocketControl tmpSocketControl;
+      SocketControl tmpSocketControl(sslHandler);
       char ipArr[100];
       strncpy(ipArr, recepientIp.c_str(), sizeof(recepientIp));
       int err = tmpSocketControl.bind(ipArr, stoi(recepientPort));

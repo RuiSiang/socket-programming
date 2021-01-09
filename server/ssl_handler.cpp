@@ -126,25 +126,23 @@ string SslHandler::decryptMessage(string encryptedMessageEncoded)
 }
 
 //sign message
-string SslHandler::signMessage(string message)
+string SslHandler::prvEncryptMessage(string message)
 {
   //calculate limits
   int rsaLengthLimit = RSA_size(privateKey);
   int blockLength = rsaLengthLimit - 11;
 
-  //generate sha256 digest
-  string messageHash = sha256(message);
 
   //encrypt digest with private key
   unsigned char *block = (unsigned char *)malloc(rsaLengthLimit);
   memset(block, 0, rsaLengthLimit);
-  RSA_private_encrypt(blockLength, (unsigned char *)messageHash.c_str(), block, privateKey, RSA_PKCS1_PADDING);
+  RSA_private_encrypt(blockLength, (unsigned char *)message.c_str(), block, privateKey, RSA_PKCS1_PADDING);
 
   return encodeBase64(block, rsaLengthLimit);
 }
 
 //verify signature
-bool SslHandler::verifyMessage(string message, string encodedSignature, string publicKey)
+string SslHandler::prvDecryptMessage(string encodedSignature, string publicKey)
 {
   //read publi ckey
   BIO *bio = BIO_new_mem_buf((void *)publicKey.c_str(), -1);
@@ -154,8 +152,6 @@ bool SslHandler::verifyMessage(string message, string encodedSignature, string p
   //calculate limits
   int rsaLengthLimit = RSA_size(publicRsa);
 
-  //generate sha256 digest
-  string messageHash = sha256(message);
 
   //decrypt digest with public key
   string signature = decodeBase64(encodedSignature);
@@ -165,5 +161,5 @@ bool SslHandler::verifyMessage(string message, string encodedSignature, string p
   string verification = string((char *)decryptedBlock);
 
   //return comparison result
-  return verification == messageHash;
+  return verification ;
 }

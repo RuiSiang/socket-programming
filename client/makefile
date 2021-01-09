@@ -4,11 +4,11 @@ all: client clean
 CC = g++
 INCLUDE = -I. -I./include
 CFLAGS = -Wall -Wextra -g -std=c++14
-PFLAGS = -O3 -L${CURDIR}/lib -lssl -lcrypto -lpthread
+PFLAGS = -O3 -L${CURDIR}/lib -lssl -lcrypto -lz -ldl -lpthread
 
 #runner
 client: client.o listener_thread.o handler_thread.o socket_control.o logger.o ssl_handler.o base64.o
-	$(CC) client.o listener_thread.o handler_thread.o socket_control.o logger.o ssl_handler.o base64.o -o client $(PFLAGS)
+	$(CC) client.o listener_thread.o handler_thread.o socket_control.o logger.o ssl_handler.o base64.o -o bin/client $(PFLAGS)
 
 client.o: client.cpp listener_thread.h handler_thread.h
 	$(CC) $(INCLUDE) $(CFLAGS) -c client.cpp

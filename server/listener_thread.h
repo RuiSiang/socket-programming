@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include "ssl_handler.h"
 
 struct Dataset {
     std::string username;
@@ -15,12 +16,13 @@ struct Dataset {
 class ListenerThread
 {
 public:
-    ListenerThread(int);
+    ListenerThread(int, SslHandler *);
     void startListen(int);
 
 private:
     int listenerSocketDescriptor;
     std::vector<Dataset> dataset;
+    SslHandler *sslHandler;
 };
 
 #endif

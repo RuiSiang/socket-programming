@@ -21,9 +21,10 @@
 
 using namespace std;
 
-SocketControl::SocketControl()
+SocketControl::SocketControl(SslHandler *_sslHandler)
 {
   socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
+  sslHandler = _sslHandler;
   if (socketDescriptor == -1)
   {
     throw "P2P Socket Creation Failed\n";
@@ -57,6 +58,14 @@ int SocketControl::bind(char ip[100], int port)
 string SocketControl::sendCommand(string sendString)
 {
   char sendData[CHUNK_SIZE], receiveData[CHUNK_SIZE];
+  memset(sendData, '\0', sizeof(sendData));
+  strncpy(sendData, string("getpub").c_str(), sizeof(sendData));
+  send(socketDescriptor, sendData, sizeof(sendData), 0);
+  recv(socketDescriptor, receiveData, sizeof(receiveData), 0);
+  string pubkey = string(receiveData);
+
+  sendString = sslHandler->prvEncryptMessage(sendString);
+  sendString = sslHandler->encryptMessage(sendString, pubkey);
   memset(sendData, '\0', sizeof(sendData));
   strncpy(sendData, sendString.c_str(), sizeof(sendData));
   send(socketDescriptor, sendData, sizeof(sendData), 0);

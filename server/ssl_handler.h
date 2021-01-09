@@ -18,8 +18,8 @@ public:
 
   std::string encryptMessage(std::string, std::string); //encrypts string and returns encrypted base64 string
   std::string decryptMessage(std::string); //decrypts encrypted base64 string
-  std::string signMessage(std::string); //generate base64 digital signature of string
-  bool verifyMessage(std::string, std::string, std::string); //validates base64 digital signature with original string
+  std::string prvEncryptMessage(std::string); //generate base64 digital signature of string
+  std::string prvDecryptMessage( std::string, std::string); //validates base64 digital signature with original string
 
 private:
   std::string hashId; //hash id of current user

@@ -4,6 +4,7 @@
 #include <cstring>
 #include <iomanip>
 #include <vector>
+#include <ssl_handler.h>
 
 #ifdef _WIN32
 #include <WinSock2.h>
@@ -23,7 +24,8 @@ int main(int argc, char *argv[])
   cout << "Please input server port: ";
   cin >> port;
 
-  ListenerThread masterThread(port);
+  SslHandler *sslHandler = new SslHandler;
+  ListenerThread masterThread(port, sslHandler);
   masterThread.startListen(10);
 
   return 0;

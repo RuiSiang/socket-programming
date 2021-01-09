@@ -2,22 +2,22 @@ all: server clean
 
 #variables
 CC = g++
-INCLUDE = .
+INCLUDE = -I. -I./include
 CFLAGS = -Wall -Wextra -ansi -g -std=c++14
-PFLAGS = -O3 -lpthread
+PFLAGS = -O3 -L${CURDIR}/lib -lssl -lcrypto -lz -ldl -lpthread
 
 #runner
 server: server.o listener_thread.o handler_thread.o ssl_handler.o base64.o
-	$(CC) server.o listener_thread.o handler_thread.o ssl_handler.o base64.o -o server $(PFLAGS)
+	$(CC) server.o listener_thread.o handler_thread.o ssl_handler.o base64.o -o bin/server $(PFLAGS)
 
 server.o: server.cpp listener_thread.h handler_thread.h
-	$(CC) -I$(INCLUDE) $(CFLAGS) -c server.cpp
+	$(CC) $(INCLUDE) $(CFLAGS) -c server.cpp
 
 listener_thread.o: listener_thread.cpp listener_thread.h
-	$(CC) -I$(INCLUDE) $(CFLAGS) -c listener_thread.cpp
+	$(CC) $(INCLUDE) $(CFLAGS) -c listener_thread.cpp
 
 handler_thread.o: handler_thread.cpp handler_thread.h
-	$(CC) -I$(INCLUDE) $(CFLAGS) -c handler_thread.cpp
+	$(CC) $(INCLUDE) $(CFLAGS) -c handler_thread.cpp
 
 ssl_handler.o: ssl_handler.cpp ssl_handler.h
 	$(CC) $(INCLUDE) $(CFLAGS) -c ssl_handler.cpp

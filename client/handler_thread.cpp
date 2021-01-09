@@ -53,15 +53,8 @@ void HandlerThread::handler()
 
 int HandlerThread::process(string receiveString)
 {
-  string segment;
-  vector<string> segments;
-  segments.clear();
-  stringstream receiveStream(receiveString);
-  while (getline(receiveStream, segment, '#'))
-  {
-    segments.push_back(segment);
-  }
-  if (segments[0] == "getpub")
+
+  if (receiveString == "getpub")
   {
     info("Received getpub request");
     char sendData[CHUNK_SIZE];
@@ -71,10 +64,60 @@ int HandlerThread::process(string receiveString)
   }
   else
   {
+    char sendData[CHUNK_SIZE], receiveData[CHUNK_SIZE];
+    memset(sendData, '\0', sizeof(sendData));
+    strncpy(sendData, string("getpub").c_str(), sizeof(sendData));
+    SocketControl tmpSocketControl(sslHandler);
+    string recepientPort = "";
+    vector<string> userData = getList();
+    for (int i = 0; i < (userData.size() + 1) / 3; i++)
+    {
+      if (userData[i * 3 + 1] == ip)
+      {
+        recepientPort = userData[i * 3 + 2];
+      }
+    }
+    char ipArr[100];
+    strncpy(ipArr, ip.c_str(), sizeof(recepientPort));
+    int err = tmpSocketControl.bind(ipArr, stoi(recepientPort));
+    send(tmpSocketControl.socketDescriptor, sendData, sizeof(sendData), 0);
+    recv(tmpSocketControl.socketDescriptor, receiveData, sizeof(receiveData), 0);
+    string pubkey = string(receiveData);
+
+    receiveString = sslHandler->decryptMessage(receiveString);
+    receiveString = sslHandler->prvDecryptMessage(receiveString, pubkey);
+    string segment;
+    vector<string> segments;
+    segments.clear();
+    stringstream receiveStream(receiveString);
+    while (getline(receiveStream, segment, '#'))
+    {
+      segments.push_back(segment);
+    }
     string sender = segments[0];
     string amount = segments[1];
-    info("Received incoming transaction: " + sender + " sent " + amount + ". Retransmitting to server\n");
+    info("Received incoming transaction: Signing and retransmitting to server\n");
     info(mainSocketControl->sendCommand(receiveString));
   }
   return 0;
+}
+vector<string> HandlerThread::getList()
+{
+  string sendString = "List";
+  stringstream receiveStream(mainSocketControl->sendCommand(sendString));
+  string tmp;
+  vector<string> segments;
+  segments.clear();
+  while (getline(receiveStream, tmp, '\n'))
+  {
+    stringstream tmpss;
+    string segment;
+    tmpss.str(tmp);
+    while (getline(tmpss, segment, '#'))
+    {
+      segments.push_back(segment);
+    }
+  }
+  segments.erase(segments.begin(), segments.begin() + 2);
+  return segments;
 }
